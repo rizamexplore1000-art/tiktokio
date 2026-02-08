@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fortux</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    height: 100vh;
+    font-family: "Segoe UI", Arial, sans-serif;
+    overflow: hidden;
+    background: linear-gradient(160deg, #dfe9f3, #ffffff);
+}
+
+/* PAGE */
+.page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform .6s ease, opacity .6s ease;
+}
+
+.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ===== HOME PAGE ===== */
+.home {
+    background: linear-gradient(160deg, #e6e6e6, #f9f9f9);
+}
+
+.home-card {
+    width: 340px;
+    height: 560px;
+    background: #fff;
+    border-radius: 30px;
+    padding: 30px 22px;
+    box-shadow: 0 20px 45px rgba(0,0,0,.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: pop .7s ease;
+}
+
+@keyframes pop {
+    from {
+        transform: scale(.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.logo {
+    margin-top: 40px;
+    font-size: 42px;
+    font-weight: 800;
+    transform: rotate(-8deg);
+    text-align: center;
+    line-height: 1.1;
+}
+
+.logo span {
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+    margin-top: 8px;
+    transform: rotate(8deg);
+    color: #777;
+}
+
+.home-buttons {
+    width: 100%;
+    margin-top: auto;
+    margin-bottom: 40px;
+}
+
+.home-buttons button {
+    width: 100%;
+    padding: 16px;
+    border-radius: 18px;
+    border: none;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 14px;
+}
+
+/* BUTTON COLORS */
+.btn-video {
+    background: #000;
+    color: #fff;
+}
+
+.btn-mp3 {
+    background: #e0e0e0;
+}
+
+/* ===== DOWNLOADER PAGE ===== */
+.downloader {
+    background: linear-gradient(135deg, #f2f2f2, #dcdcdc);
+}
+
+.app {
+    width: 360px;
+    background: #fff;
+    border-radius: 22px;
+    padding: 24px 20px 28px;
+    box-shadow: 0 15px 35px rgba(0,0,0,.15);
+}
+
+.header {
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.header p {
+    font-size: 13px;
+    color: #777;
+}
+
+.input-box {
+    margin-top: 18px;
+}
+
+input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+}
+
+button.download {
+    margin-top: 18px;
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: #000;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.status {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.back {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HOME -->
+<div class="page home" id="home">
+    <div class="home-card">
+        <div class="logo">
+            Fortux<br>
+            <span>By Fathur Rizam</span>
+        </div>
+
+        <div class="home-buttons">
+            <button class="btn-video" onclick="openDownloader('video')">VIDEO</button>
+            <button class="btn-mp3" onclick="openDownloader('mp3')">MP3</button>
+        </div>
+    </div>
+</div>
+
+<!-- DOWNLOADER -->
+<div class="page downloader hidden" id="downloader">
+    <div class="app">
+        <div class="header">
+            <h1 id="title">Downloader</h1>
+            <p id="mode"></p>
+        </div>
+
+        <div class="input-box">
+            <input id="link" placeholder="Ketuk untuk tempel link TikTok" onclick="autoPaste()">
+        </div>
+
+        <button class="download" onclick="unduh()">Unduh</button>
+
+        <div class="status" id="status"></div>
+        <div class="back" onclick="back()">← Kembali</div>
+    </div>
+</div>
+
+<script>
+let currentType = "video";
+
+function openDownloader(type) {
+    currentType = type;
+
+    title.innerText = type === "mp3"
+        ? "TikTok MP3 Downloader"
+        : "TikTok Video Downloader";
+
+    mode.innerText = type === "mp3"
+        ? "Audio MP3"
+        : "Video Tanpa Watermark";
+
+    home.classList.add("hidden");
+    home.style.transform = "translateX(-100%)";
+
+    downloader.classList.remove("hidden");
+    downloader.style.transform = "translateX(0)";
+}
+
+function back() {
+    downloader.classList.add("hidden");
+    downloader.style.transform = "translateX(100%)";
+
+    home.classList.remove("hidden");
+    home.style.transform = "translateX(0)";
+}
+
+async function autoPaste() {
+    try {
+        link.value = await navigator.clipboard.readText();
+    } catch {}
+}
+
+async function unduh() {
+    const status = document.getElementById("status");
+    if (!link.value) {
+        status.innerText = "⚠️ Link belum diisi";
+        return;
+    }
+
+    status.innerText = "⏳ Memproses...";
+
+    try {
+        const api = `https://tikwm.com/api/?url=${encodeURIComponent(link.value)}`;
+        const res = await fetch(api);
+        const data = await res.json();
+
+        if (!data.data) {
+            status.innerText = "❌ Gagal";
+            return;
+        }
+
+        window.open(
+            currentType === "video"
+                ? data.data.play
+                : data.data.music,
+            "_blank"
+        );
+
+        status.innerText = "✅ Berhasil";
+    } catch {
+        status.innerText = "❌ Error";
+    }
+}
+</script>
+
+</body>
+</html>
